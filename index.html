@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4ff">
+  <title>K영어회화 · 문장 만들기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#home" aria-label="K영어회화 홈"><span class="brand-mark">K</span><span>K영어회화<small>MAKE YOUR SENTENCE</small></span></a>
+      <div class="nav-label">학습 메뉴</div>
+      <nav class="side-nav" aria-label="주 메뉴">
+        <button class="nav-item active" data-view="home"><span class="nav-icon">⌂</span>홈 · Unit 선택</button>
+        <button class="nav-item" data-view="stats"><span class="nav-icon">▥</span>학습 통계</button>
+        <button class="nav-item" data-view="study"><span class="nav-icon">▤</span>문장 학습</button>
+        <button class="nav-item" data-view="quiz"><span class="nav-icon">✎</span>문장 만들기</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="side-note">오늘도 한 문장씩,<br><strong>꾸준히 쌓아가요!</strong></div><div class="side-mascot mascot-mini" data-mascot></div></div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar"><div><div class="eyebrow">KOREAN → ENGLISH</div><h1 id="page-title">오늘의 학습</h1></div><div class="top-actions"><button class="points-button" id="points-button"><span>✦</span> <b id="points-total">0</b> pt</button><button class="user-button" id="user-button"><span class="avatar-dot">K</span><span id="user-label">로그인</span></button><button class="user-add-button" id="user-add-button" type="button">사용자 추가하기</button><button class="menu-toggle" id="menu-toggle" aria-label="메뉴 열기">☰</button></div></header>
+
+      <section class="view active" id="view-home">
+        <div class="welcome-card home-hero"><div class="welcome-copy"><div class="eyebrow">YOUR ENGLISH JOURNEY</div><h2><span id="welcome-name">반가워요!</span><br>오늘은 어떤 Unit을 공부할까요?</h2><p>Unit을 골라 바로 문장 학습이나 퀴즈를 시작해요.</p></div><div class="hero-mascot mascot" data-mascot></div><div class="welcome-orb orb-one"></div><div class="welcome-orb orb-two"></div></div>
+        <div class="view-intro unit-picker-heading"><div><span class="eyebrow">CHOOSE YOUR LESSON</span><h2>학습할 Unit 선택</h2><p>여러 Unit을 함께 선택할 수 있어요.</p></div><div class="selection-tools"><button class="text-button" data-action="select-all">전체 선택</button><span class="selection-count" id="selection-count">0개 선택</span></div></div>
+        <div id="unit-groups" class="unit-groups home-unit-groups"></div>
+        <div class="sticky-actions home-sticky"><span id="selected-label">Unit을 선택해주세요</span><div><button class="secondary-button" data-action="start-study">학습하기</button><button class="primary-button" data-action="start-quiz">퀴즈 시작 →</button></div></div>
+      </section>
+
+      <section class="view" id="view-stats">
+        <div class="welcome-card stats-hero"><div class="welcome-copy"><div class="eyebrow">YOUR PROGRESS</div><h2>매일 쌓이는 영어 실력</h2><p>나의 학습 현황을 한눈에 살펴봐요.</p></div><div class="stats-mascot mascot" data-mascot></div></div>
+        <div class="stats-grid"><article class="stat-card"><div class="stat-icon lilac">◷</div><div><span>전체 진행률</span><strong id="overall-progress">0%</strong></div><div class="ring" id="overall-ring"><span>0%</span></div></article><article class="stat-card"><div class="stat-icon pink">✓</div><div><span>맞힌 문장</span><strong id="correct-count">0 <small>문장</small></strong></div><div class="stat-foot">차근차근 쌓이는 중이에요</div></article><article class="stat-card"><div class="stat-icon yellow">✦</div><div><span>연속 학습</span><strong id="streak-count">0 <small>일</small></strong></div><div class="stat-foot">매일 조금씩 이어가봐요</div></article></div>
+        <div class="home-grid"><section class="panel progress-panel"><div class="section-heading"><div><span class="eyebrow">PART BY PART</span><h3>Part별 진행률</h3></div></div><div id="part-progress" class="part-progress-list"></div><div class="leaderboard"><div class="section-heading"><div><span class="eyebrow">LEARNING TOGETHER</span><h3>전체 사용자 진행률</h3></div></div><div id="leaderboard-list" class="leaderboard-list"><span>로그인하면 다른 학습자와 진행률을 비교할 수 있어요.</span></div></div></section><section class="panel daily-panel stats-daily"><div class="section-heading"><div><span class="eyebrow">DAILY PRACTICE</span><h3>날짜별 · Unit별 정답 기록</h3></div><span class="today-label" id="today-label"></span></div><div id="daily-summary" class="daily-summary"></div></section></div>
+      </section>
+
+      <section class="view" id="view-study"><div id="study-content"></div></section>
+      <section class="view" id="view-quiz"><div id="quiz-content"></div></section>
+    </main>
+  </div>
+
+  <button class="menu-scrim" id="menu-scrim" aria-label="메뉴 닫기" hidden></button>
+  <div class="modal-backdrop" id="modal" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button type="button" class="modal-close" id="modal-close" aria-label="닫기">×</button><div id="modal-content"></div></section></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

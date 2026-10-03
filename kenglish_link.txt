@@ -1,0 +1,62 @@
+| Unit | 제목                                           | 강의 영상 QR URL                                                                                                         |
+| ---: | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+|   01 | 영어는 ‘주어 + 동사’로 시작한다.                         | [https://www.youtube.com/watch?v=dChiYEk7Lxc](https://www.youtube.com/watch?v=dChiYEk7Lxc)                           |
+|   02 | 동사가 시제를 바꾼다.                                 | [https://www.youtube.com/watch?v=CTpvRi2G6HA](https://www.youtube.com/watch?v=CTpvRi2G6HA)                           |
+|   03 | 부정문 - 동사의 비밀 공개                              | [https://www.youtube.com/watch?v=CTpvRi2G6HA](https://www.youtube.com/watch?v=CTpvRi2G6HA)                           |
+|   04 | 동사 단어 10개로 80문장 만들기!                         | [https://www.youtube.com/watch?v=CTpvRi2G6HA](https://www.youtube.com/watch?v=CTpvRi2G6HA)                           |
+|   05 | 더 자세한 문장 만들기 - 주어 동사 목적어 + +                 | [https://www.youtube.com/watch?v=dChiYEk7Lxc](https://www.youtube.com/watch?v=dChiYEk7Lxc)                           |
+|   06 | 의문문 - 단어의 위치를 알아야 문장을 만들 수 있다!               | [https://www.youtube.com/watch?v=1Eibwov2PfU](https://www.youtube.com/watch?v=1Eibwov2PfU)                           |
+|   07 | 더 자세한 질문 하기 - 육하원칙의 위치와 사용법                  | [https://www.youtube.com/watch?v=xgxG-KJMrc0](https://www.youtube.com/watch?v=xgxG-KJMrc0)                           |
+|   08 | be동사 - 영어의 반은 be동사                           | [https://www.youtube.com/watch?v=mC9O-1vrjJ4](https://www.youtube.com/watch?v=mC9O-1vrjJ4)                           |
+|   09 | be동사 부정문 - am not 과 do not 의 구분법             | [https://www.youtube.com/watch?v=mC9O-1vrjJ4](https://www.youtube.com/watch?v=mC9O-1vrjJ4)                           |
+|   10 | be동사 의문문 - 움직임 하나로 의문문이 가능하다!                | [https://www.youtube.com/watch?v=pn1fUscTRNs&t=15s](https://www.youtube.com/watch?v=pn1fUscTRNs&t=15s)               |
+|   11 | be동사 문장 총정리                                  | [https://www.youtube.com/watch?v=pn1fUscTRNs&t=15s](https://www.youtube.com/watch?v=pn1fUscTRNs&t=15s)               |
+|   12 | be동사 두 번째 뜻 - ~에 있다 (위치/장소)                  | [https://www.youtube.com/watch?v=FCUbWrkqBZs&t=35s](https://www.youtube.com/watch?v=FCUbWrkqBZs&t=35s)               |
+|   13 | 육하원칙 + be동사 의문문 - be동사 문장도 육하원칙 응용이 가능!      | [https://www.youtube.com/watch?v=pn1fUscTRNs&t=15s](https://www.youtube.com/watch?v=pn1fUscTRNs&t=15s)               |
+|   14 | be동사 과거 ‘was/were’ - 영어 표현을 늘릴 수 있는 지름길!     | [https://www.youtube.com/watch?v=mC9O-1vrjJ4](https://www.youtube.com/watch?v=mC9O-1vrjJ4)                           |
+|   15 | ‘will + be’ - 내 영어에 경쟁력을 더해주자                | [https://www.youtube.com/watch?v=mC9O-1vrjJ4](https://www.youtube.com/watch?v=mC9O-1vrjJ4)                           |
+|   16 | ‘can + be’ - 영어에 입체감을 더하자                    | [https://www.youtube.com/watch?v=mC9O-1vrjJ4](https://www.youtube.com/watch?v=mC9O-1vrjJ4)                           |
+|   17 | 3인칭 단수 - 동사뒤에 ‘s’는 언제 붙나요?                   | [https://www.youtube.com/watch?v=5IejhDV_nZk](https://www.youtube.com/watch?v=5IejhDV_nZk)                           |
+|   18 | 긴 영어 문장 만들기 - If 만약에 ~라면                     | [https://www.youtube.com/watch?v=Z-gwYs4A1vI](https://www.youtube.com/watch?v=Z-gwYs4A1vI)                           |
+|   19 | to ~하는 것 - 반드시 알아야 하는 영어 단어 하나!              | [https://www.youtube.com/watch?v=M501Y8FBe90&t=313s](https://www.youtube.com/watch?v=M501Y8FBe90&t=313s)             |
+|   20 | 어휘력 패턴의 시작 - want to ~하고 싶다                  | [https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s](https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s)             |
+|   21 | wanted to ~하고 싶었다                            | [https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s](https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s)             |
+|   22 | 육하원칙 + 의문문 (want to) - 더 자세한 질문 만들기          | [https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s](https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s)             |
+|   23 | like to/ need to - ~하는 것을 좋아해요 / ~하는 것이 필요해요 | [https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s](https://www.youtube.com/watch?v=8WcDnvQOq0s&t=110s)             |
+|   24 | want 누구 to - 누가 ~하는 것을 원한다                   | [https://www.youtube.com/watch?v=x2FJJIJsiDk&t=192s](https://www.youtube.com/watch?v=x2FJJIJsiDk&t=192s)             |
+|   25 | It takes (시간이) ~걸리다                          | [https://www.youtube.com/watch?v=g1hQbV8mzME](https://www.youtube.com/watch?v=g1hQbV8mzME)                           |
+|   26 | when ~할 때/ ~일 때 - 긴 문장 만들기                   | [https://www.youtube.com/watch?v=Z-gwYs4A1vI&t=405s](https://www.youtube.com/watch?v=Z-gwYs4A1vI&t=405s)             |
+|   27 | be going to ~할 것이다 - 어휘력 패턴도 be동사 패턴이 있다!    | [https://www.youtube.com/watch?v=tCzos6qK43o](https://www.youtube.com/watch?v=tCzos6qK43o)                           |
+|   28 | was/were going to - ~할 거였다                   | [https://www.youtube.com/watch?v=tCzos6qK43o](https://www.youtube.com/watch?v=tCzos6qK43o)                           |
+|   29 | be able to - ~하는 것이 가능하다                     | [https://www.youtube.com/watch?v=0q8_jW7Ef8s](https://www.youtube.com/watch?v=0q8_jW7Ef8s)                           |
+|   30 | be able to - 시제별 응용 표현하기                     | [https://www.youtube.com/watch?v=0q8_jW7Ef8s](https://www.youtube.com/watch?v=0q8_jW7Ef8s)                           |
+|   31 | before & after ~하기 전에/ ~한 후에 - 긴 문장 만들기      | [https://www.youtube.com/watch?v=Z-gwYs4A1vI&t=405s](https://www.youtube.com/watch?v=Z-gwYs4A1vI&t=405s)             |
+|   32 | have to - ~을 해야만 한다                          | [https://www.youtube.com/watch?v=kd4ddhtJo34](https://www.youtube.com/watch?v=kd4ddhtJo34)                           |
+|   33 | had to - ~을 해야 했다                            | [https://www.youtube.com/watch?v=kd4ddhtJo34](https://www.youtube.com/watch?v=kd4ddhtJo34)                           |
+|   34 | should - ~해야 한다                              | [https://www.youtube.com/watch?v=_shYoQhDFM0](https://www.youtube.com/watch?v=_shYoQhDFM0)                           |
+|   35 | should 의문문 - 조언 또는 의견 구하기                    | [https://www.youtube.com/watch?v=_shYoQhDFM0](https://www.youtube.com/watch?v=_shYoQhDFM0)                           |
+|   36 | might - ~ 할지도 모른다                            | [https://www.youtube.com/watch?v=_shYoQhDFM0](https://www.youtube.com/watch?v=_shYoQhDFM0)                           |
+|   37 | Although (비록) ~하더라도 - 긴 문장 만들기               | [https://www.youtube.com/watch?v=HtimXvgqlas](https://www.youtube.com/watch?v=HtimXvgqlas)                           |
+|   38 | be ~ing - ~하는 중이다                            | [https://www.youtube.com/watch?v=2D5kOmUpR2o](https://www.youtube.com/watch?v=2D5kOmUpR2o)                           |
+|   39 | was/were ~ing - ~하고 있었다                      | [https://www.youtube.com/watch?v=2D5kOmUpR2o](https://www.youtube.com/watch?v=2D5kOmUpR2o)                           |
+|   40 | be ~ing 두 번째 뜻 - 내 영어에 경쟁력을 더해 주자            | [https://www.youtube.com/watch?v=2D5kOmUpR2o](https://www.youtube.com/watch?v=2D5kOmUpR2o)                           |
+|   41 | be supposed to - 원래 ~하기로 되어있다                | [https://www.youtube.com/watch?v=xFV4CaSI5UE](https://www.youtube.com/watch?v=xFV4CaSI5UE)                           |
+|   42 | 동명사 ~ing - ~하는 것                             | [https://www.youtube.com/watch?v=O8NdgW7QOYg](https://www.youtube.com/watch?v=O8NdgW7QOYg)                           |
+|   43 | because - ~때문에                               | [https://www.youtube.com/watch?v=Z-gwYs4A1vI&t=405s](https://www.youtube.com/watch?v=Z-gwYs4A1vI&t=405s)             |
+|   44 | used to - ~을 했었다 (한때)                        | [https://www.youtube.com/watch?v=2tUmkF8s33U](https://www.youtube.com/watch?v=2tUmkF8s33U)                           |
+|   45 | be used to - ~하는 게 익숙하다                      | [https://www.youtube.com/watch?v=2tUmkF8s33U](https://www.youtube.com/watch?v=2tUmkF8s33U)                           |
+|   46 | try to - ~하려고 노력하다                           | [https://www.youtube.com/watch?v=0e7Kkl6bHMo](https://www.youtube.com/watch?v=0e7Kkl6bHMo)                           |
+|   47 | try not to - ~하지 않으려고 노력하다                   | [https://www.youtube.com/watch?v=5bdIQ74vxY8](https://www.youtube.com/watch?v=5bdIQ74vxY8)                           |
+|   48 | 어휘력 패턴 + be동사                                | [https://www.youtube.com/channel/UCZ7nsIsZBLtWsj0cFYLKjnA](https://www.youtube.com/channel/UCZ7nsIsZBLtWsj0cFYLKjnA) |
+|   49 | ~ing 와 ~ed - 차이와 쓰임새                         | [https://www.youtube.com/watch?v=NbJ7g_kUzfg&t=296s](https://www.youtube.com/watch?v=NbJ7g_kUzfg&t=296s)             |
+|   50 | 명령문 - ~해/ ~하지마                               | [https://www.youtube.com/watch?v=IDFPacSPeGE&t=17s](https://www.youtube.com/watch?v=IDFPacSPeGE&t=17s)               |
+|   51 | 전치사 at, in, on                               | [https://www.youtube.com/watch?v=GaTS2nCqdWo](https://www.youtube.com/watch?v=GaTS2nCqdWo)                           |
+|   52 | at, in, on - 시간, 년도, 요일                      | [https://www.youtube.com/watch?v=PPwPMUMTaxY&t=474s](https://www.youtube.com/watch?v=PPwPMUMTaxY&t=474s)             |
+|   53 | for의 다양한 쓰임새                                 | [https://www.youtube.com/watch?v=evZqClcHt9k&t=22s](https://www.youtube.com/watch?v=evZqClcHt9k&t=22s)               |
+|   54 | during vs while - ~동안                        | [https://www.youtube.com/watch?v=vneFvfBhHGU](https://www.youtube.com/watch?v=vneFvfBhHGU)                           |
+|   55 | 비인칭 주어 It - 날씨, 시간, 요일                       | [https://www.youtube.com/watch?v=UKcrEJkOLUc](https://www.youtube.com/watch?v=UKcrEJkOLUc)                           |
+|   56 | ago & later - ~전에/ ~후에                       | [https://www.youtube.com/watch?v=bwoWgaSCUmc](https://www.youtube.com/watch?v=bwoWgaSCUmc)                           |
+|   57 | What + 의문문                                   | [https://www.youtube.com/watch?v=qcr2Is91lmw](https://www.youtube.com/watch?v=qcr2Is91lmw)                           |
+|   58 | How + 의문문                                    | [https://www.youtube.com/watch?v=uYc44jCIRfw](https://www.youtube.com/watch?v=uYc44jCIRfw)                           |
+|   59 | Don’t you~? 부정 의문문                           | [https://www.youtube.com/watch?v=KbR-oh369ZI](https://www.youtube.com/watch?v=KbR-oh369ZI)                           |
+|   60 | Aren’t you~? 부정 의문문                          | [https://www.youtube.com/watch?v=KbR-oh369ZI](https://www.youtube.com/watch?v=KbR-oh369ZI)                           |
