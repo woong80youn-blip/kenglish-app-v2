@@ -6,8 +6,8 @@ const safeParse = (value, fallback) => { try { return JSON.parse(value) ?? fallb
 const LOCAL_KEY = "kenglish-progress-v1";
 const USER_KEY = "kenglish-local-user";
 const DEFAULT_STATE = { progress: {}, selectedUnits: [], character: 0, points: 0, streak: 0, lastStudyDate: "", daily: {}, dailyByUnit: {}, awarded: { units: [], parts: [], streak5: 0, streak10: 0, streak5Run: 0, streak10Run: 0, complete: false } };
-const characters = ["Excited","Joyful","Grateful","Energized","Sensitive","Confused","Bored","Stressed","Angry","Insecure","Hurt","Guilty"];
-const characterPositions = characters.map((_, i) => `${(i % 4) * 33.333}% ${Math.floor(i / 4) * 50}%`);
+const characters = ["excited","joyful","grateful","energized","sensitive","confused","bored","stressed","angry","insecure","hurt","guilty"];
+const characterFiles = ["excited.png","joyful.png","gratful.png","energized.png","sensitive.png","confused.png","bored.png","stressed.png","angry.png","insecure.png","hurt.png","guilty.png"];
 let sentences = [];
 let units = [];
 let state = structuredClone(DEFAULT_STATE);
@@ -44,7 +44,7 @@ function saveLocal() { state.selectedUnits = [...selectedUnitIds]; localStorage.
 function progressFor(sentence) { return state.progress[sentence.no] || { correct: 0, status: "unlearned" }; }
 function realSentences(unit) { return unit.sentences.filter(item => item.english && !item.english.includes("해당 없음") && item.korean && !item.korean.includes("해당 없음")); }
 function unitPct(unit) { const list = realSentences(unit); return list.length ? Math.round(list.filter(item => progressFor(item).status === "complete").length / list.length * 100) : 0; }
-function overallPct() { const all = units.flatMap(realSentences); return all.length ? Math.round(all.filter(item => progressFor(item).status === "complete").length / all.length * 100) : 0; }
+function overallPct() { const all = units.flatMap(realSentences); return all.length ? Number((all.filter(item => progressFor(item).status === "complete").length / all.length * 100).toFixed(2)) : 0; }
 function partPct(part) { const all = units.filter(unit => unit.part === part).flatMap(realSentences); return all.length ? Math.round(all.filter(item => progressFor(item).status === "complete").length / all.length * 100) : 0; }
 function parts() { return [...new Set(units.map(unit => unit.part))]; }
 function normalizeAnswer(text) {
@@ -54,23 +54,29 @@ function getPoints() { return Number(state.points || 0); }
 function humanDate(date = new Date()) { return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }); }
 function escapeHtml(value = "") { return String(value).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c])); }
 function setAccent() {
+  const characterIndex = Number.isInteger(state.character) && state.character >= 0 && state.character < characters.length ? state.character : 0;
   const palette = [
     ["#d94e91","#ffedf5"],["#dc568c","#fff0f5"],["#7138bf","#eee4ff"],["#654acb","#efebff"],
     ["#347dbb","#eaf4ff"],["#4d5ec8","#edf0ff"],["#25896f","#e5f7f1"],["#37884f","#e9f7e9"],
     ["#d85b32","#fff0e8"],["#cf741c","#fff1e2"],["#be8611","#fff6dc"],["#b88b17","#fff7dc"]
-  ][state.character] || ["#8050d6","#f0e9ff"];
+  ][characterIndex] || ["#8050d6","#f0e9ff"];
   document.documentElement.style.setProperty("--accent", palette[0]);
   document.documentElement.style.setProperty("--accent-soft", palette[1]);
-  $$("[data-mascot]").forEach(el => { el.classList.add("mascot"); el.style.backgroundPosition = characterPositions[state.character] || characterPositions[2]; });
+  document.documentElement.style.setProperty("--character-image", `url("./images/mood/${characterFiles[characterIndex]}")`);
+  const selectedIcon = $("#selected-character-icon");
+  if (selectedIcon) { selectedIcon.src = `./images/mood/${characterFiles[characterIndex]}`; selectedIcon.alt = characters[characterIndex]; }
+  const selectedName = $("#selected-character-name");
+  if (selectedName) selectedName.textContent = characters[characterIndex];
+  $$ ("[data-mascot]").forEach(el => el.classList.add("mascot"));
 }
 
 function renderHome() {
   const done = Object.values(state.progress).filter(p => p.status === "complete").length;
   const all = units.flatMap(realSentences).length;
   $("#welcome-name").textContent = activeUser?.nickname ? `${activeUser.nickname}님, 반가워요!` : "반가워요!";
-  $("#overall-progress").textContent = `${overallPct()}%`;
-  $("#overall-ring").style.background = `conic-gradient(var(--accent) ${overallPct()}%, #eeeaf4 0)`;
-  $("#overall-ring span").textContent = `${overallPct()}%`;
+  $("#overall-progress").textContent = `${overallPct().toFixed(2)}%`;
+  $("#overall-ring").style.background = `conic-gradient(var(--accent) ${overallPct().toFixed(2)}%, #eeeaf4 0)`;
+  $("#overall-ring span").textContent = `${overallPct().toFixed(2)}%`;
   $("#correct-count").innerHTML = `${done} <small>/ ${all} 문장</small>`;
   $("#streak-count").innerHTML = `${state.streak || 0} <small>일</small>`;
   $("#points-total").textContent = getPoints().toLocaleString("ko-KR");
@@ -80,14 +86,13 @@ function renderHome() {
   const history = Object.entries(state.dailyByUnit || {}).sort(([a],[b])=>b.localeCompare(a)).slice(0,7);
   $("#daily-summary").innerHTML = history.length ? `<div class="daily-history">${history.map(([date,counts])=>`<div class="daily-record"><b>${date===today?"오늘":escapeHtml(date.slice(5).replace("-","."))}</b><span>${Object.entries(counts).map(([unit,count])=>`${escapeHtml(unit)} <strong>${count}</strong>문장`).join("　·　")}</span><em>${Object.values(counts).reduce((sum,count)=>sum+count,0)} 정답</em></div>`).join("")}</div>` : "아직 학습 기록이 없어요. 한 문제부터 시작해볼까요?";
   $("#user-label").textContent = activeUser?.nickname || "로그인";
-  $("#user-add-button").hidden = Boolean(activeUser);
   renderLeaderboard();
 }
 function localProfiles() { try { return JSON.parse(localStorage.getItem("kenglish-local-profiles")) || []; } catch { return []; } }
 async function renderLeaderboard() {
  const target=$("#leaderboard-list");if(!target)return;if(!activeUser){target.textContent="로그인하면 전체 학습자와 진행률을 비교할 수 있어요.";return;}
  if(!firebase?.db){target.textContent="Firebase에 연결되면 전체 학습자 순위를 볼 수 있어요.";return;}
- try{const {collection,getDocs}=firebase.firestore;const snap=await getDocs(collection(firebase.db,"publicStats"));const entries=snap.docs.map(doc=>({uid:doc.id,...doc.data()})).sort((a,b)=>(b.overall||0)-(a.overall||0));if(!entries.some(item=>item.uid===activeUser.uid))entries.push({uid:activeUser.uid,nickname:activeUser.nickname,overall:overallPct()});entries.sort((a,b)=>(b.overall||0)-(a.overall||0));target.innerHTML=entries.slice(0,5).map((item,index)=>'<div class="leaderboard-row '+(item.uid===activeUser.uid?'me':'')+'"><span class="leaderboard-rank">'+(index+1)+'</span><span>'+escapeHtml(item.nickname||'학습자')+(item.uid===activeUser.uid?' · 나':'')+'</span><span class="leaderboard-pct">'+Number(item.overall||0)+'%</span></div>').join('');}catch(error){target.textContent="전체 사용자 진행률을 불러오지 못했어요.";console.warn("Leaderboard read failed",error);}
+ try{const {collection,getDocs}=firebase.firestore;const snap=await getDocs(collection(firebase.db,"publicStats"));const entries=snap.docs.map(doc=>({uid:doc.id,...doc.data()})).sort((a,b)=>(Number(b.overall)||0)-(Number(a.overall)||0));if(!entries.some(item=>item.uid===activeUser.uid))entries.push({uid:activeUser.uid,nickname:activeUser.nickname,overall:overallPct()});entries.sort((a,b)=>(Number(b.overall)||0)-(Number(a.overall)||0));target.innerHTML=entries.map((item,index)=>'<div class="leaderboard-row '+(item.uid===activeUser.uid?'me':'')+'"><span class="leaderboard-rank">'+(index+1)+'</span><span>'+escapeHtml(item.nickname||'학습자')+(item.uid===activeUser.uid?' · 나':'')+'</span><span class="leaderboard-pct">'+(Number(item.overall)||0).toFixed(2)+'%</span></div>').join('');}catch(error){target.textContent="전체 사용자 진행률을 불러오지 못했어요.";console.warn("Leaderboard read failed",error);}
 }
 
 function renderUnits() {
@@ -102,6 +107,7 @@ function setMenuOpen(open) {
 }
 function showView(name) {
   if (name === "units") name = "home";
+  if (name === "study" || name === "quiz") syncSelectedUnitsFromCards();
   view = name;
   $$(".view").forEach(section => section.classList.toggle("active", section.id === `view-${name}`));
   $$(".nav-item").forEach(button => button.classList.toggle("active", button.dataset.view === name));
@@ -115,24 +121,36 @@ function showView(name) {
   window.location.hash = name === "stats" ? "stats" : name;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+function syncSelectedUnitsFromCards() {
+  const selectedCards = $$(".unit-card.selected");
+  if (selectedCards.length) selectedUnitIds = new Set(selectedCards.map(card => card.dataset.unit));
+  state.selectedUnits = [...selectedUnitIds];
+}
+function promptUnitSelection() {
+  showView("home");
+  requestAnimationFrame(() => $("#unit-groups")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  toast("먼저 학습할 Unit을 선택해주세요.");
+}
 function renderStudy() {
   const chosen = units.filter(unit => selectedUnitIds.has(unit.number));
   if (!chosen.length) {
-    $("#study-content").innerHTML = `<div class="empty-state"><div class="empty-mascot mascot" data-mascot style="background-position:${characterPositions[state.character]}"></div><h3>먼저 Unit을 골라주세요</h3><p>학습할 Unit을 선택하면 문장과 발음을 확인할 수 있어요.</p><button class="primary-button" data-view="units">Unit 선택하기 →</button></div>`; return;
+    $("#study-content").innerHTML = `<div class="empty-state"><div class="empty-mascot mascot" data-mascot></div><h3>먼저 Unit을 골라주세요</h3><p>학습할 Unit을 선택하면 문장과 발음을 확인할 수 있어요.</p><button class="primary-button" data-action="choose-units">Unit 선택하기 →</button></div>`; return;
   }
-  $("#study-content").innerHTML = chosen.map(unit => `<section class="study-header"><div class="study-unit-heading"><div><div class="eyebrow">${escapeHtml(unit.part)} · ${escapeHtml(unit.number)}</div><h2>${escapeHtml(unit.title)}</h2><p>문장 ${realSentences(unit).length}개 · 진행률 ${unitPct(unit)}%</p></div><div class="section-mascot mascot" data-mascot style="background-position:${characterPositions[state.character]}"></div>${/^https?:\/\//i.test(unit.url) ? `<a class="video-link" href="${escapeHtml(unit.url)}" target="_blank" rel="noopener">▶ 강의 영상 보기</a>` : ""}</div></section><div class="sentence-list">${unit.sentences.map(sentence => { const isPlaceholder = !realSentences(unit).includes(sentence); const progress=progressFor(sentence); const status=progress.status==="complete"?`학습 완료 · 정답 ${progress.correct}회`:progress.status==="learning"?"다시 연습해요":"새 문장"; return `<article class="sentence-card"><span class="sentence-no">${escapeHtml(sentence.sentence_no)}</span><div><div class="sentence-ko">${escapeHtml(sentence.korean)}</div><div class="sentence-en ${isPlaceholder ? "sentence-empty" : ""}">${escapeHtml(sentence.english)}</div>${!isPlaceholder?`<div class="sentence-status ${progress.status}">${status}</div>`:""}</div>${!isPlaceholder ? `<button class="speak-button" data-speak="${escapeHtml(sentence.english)}" aria-label="영어 발음 듣기">◖</button>` : ""}</article>`; }).join("")}</div>`).join("");
+  $("#study-content").innerHTML = chosen.map(unit => `<section class="study-header"><div class="study-unit-heading"><div><div class="eyebrow">${escapeHtml(unit.part)} · ${escapeHtml(unit.number)}</div><h2>${escapeHtml(unit.title)}</h2><p>문장 ${realSentences(unit).length}개 · 진행률 ${unitPct(unit)}%</p></div><div class="section-mascot mascot" data-mascot></div>${/^https?:\/\//i.test(unit.url) ? `<a class="video-link" href="${escapeHtml(unit.url)}" target="_blank" rel="noopener">▶ 강의 영상 보기</a>` : ""}</div></section><div class="sentence-list">${unit.sentences.map(sentence => { const isPlaceholder = !realSentences(unit).includes(sentence); const progress=progressFor(sentence); const status=progress.status==="complete"?`학습 완료 · 정답 ${progress.correct}회`:progress.status==="learning"?"다시 연습해요":"새 문장"; return `<article class="sentence-card"><span class="sentence-no">${escapeHtml(sentence.sentence_no)}</span><div><div class="sentence-ko">${escapeHtml(sentence.korean)}</div><div class="sentence-en ${isPlaceholder ? "sentence-empty" : ""}">${escapeHtml(sentence.english)}</div>${!isPlaceholder?`<div class="sentence-status ${progress.status}">${status}</div>`:""}</div>${!isPlaceholder ? `<button class="speak-button" data-speak="${escapeHtml(sentence.english)}" aria-label="영어 발음 듣기">◖</button>` : ""}</article>`; }).join("")}</div>`).join("");
 }
 function renderQuizSetup() {
   currentQuiz = null;
   const chosen = units.filter(unit => selectedUnitIds.has(unit.number));
-  if (!chosen.length) { $("#quiz-content").innerHTML = `<div class="empty-state"><div class="empty-mascot mascot" data-mascot style="background-position:${characterPositions[state.character]}"></div><h3>퀴즈할 Unit을 골라주세요</h3><p>하나 이상의 Unit을 선택한 후 퀴즈를 시작할 수 있어요.</p><button class="primary-button" data-view="units">Unit 선택하기 →</button></div>`; return; }
+  if (!chosen.length) { $("#quiz-content").innerHTML = `<div class="empty-state"><div class="empty-mascot mascot" data-mascot></div><h3>퀴즈할 Unit을 골라주세요</h3><p>하나 이상의 Unit을 선택한 후 퀴즈를 시작할 수 있어요.</p><button class="primary-button" data-action="choose-units">Unit 선택하기 →</button></div>`; return; }
   const count = chosen.reduce((sum, u) => sum + realSentences(u).length, 0);
-  $("#quiz-content").innerHTML = `<div class="quiz-card"><div class="section-mascot mascot" data-mascot style="background-position:${characterPositions[state.character]}"></div><div class="eyebrow">READY TO PRACTICE?</div><h2>문장 만들기 퀴즈</h2><p class="prompt-help">${chosen.map(u => escapeHtml(u.number)).join(" · ")}에서 문제가 무작위로 나와요.</p><div class="korean-prompt">몇 문제를 풀어볼까요?</div><label for="quiz-count">문제 수 <b id="quiz-count-label">${Math.min(10,count)}</b> / ${count}</label><input id="quiz-count" type="range" min="1" max="${count}" value="${Math.min(10,count)}" style="width:100%;accent-color:var(--accent);margin:12px 0 24px"><button class="primary-button" id="begin-quiz" style="width:100%">퀴즈 시작하기 →</button><p class="quiz-footer">힌트를 누르면 정답 문장의 단어를 섞어 보여줘요.</p></div>`;
+  $("#quiz-content").innerHTML = `<div class="quiz-card"><div class="section-mascot mascot" data-mascot></div><div class="eyebrow">READY TO PRACTICE?</div><h2>문장 만들기 퀴즈</h2><p class="prompt-help">${chosen.map(u => escapeHtml(u.number)).join(" · ")}에서 문제가 무작위로 나와요.</p><div class="korean-prompt">몇 문제를 풀어볼까요?</div><label for="quiz-count">문제 수 <b id="quiz-count-label">${Math.min(10,count)}</b> / ${count}</label><input id="quiz-count" type="range" min="1" max="${count}" value="${Math.min(10,count)}" style="width:100%;accent-color:var(--accent);margin:12px 0 24px"><button class="primary-button" id="begin-quiz" style="width:100%">퀴즈 시작하기 →</button><p class="quiz-footer">힌트를 누르면 정답 문장의 단어를 섞어 보여줘요.</p></div>`;
   $("#quiz-count").addEventListener("input", event => $("#quiz-count-label").textContent = event.target.value);
   $("#begin-quiz").addEventListener("click", () => startQuiz(Number($("#quiz-count").value)));
 }
 function startQuiz(count) {
   const chosen = units.filter(unit => selectedUnitIds.has(unit.number)).flatMap(realSentences);
+  if (!chosen.length) { promptUnitSelection(); return; }
+  count = Math.max(1, Math.min(Number(count) || 1, chosen.length));
   const shuffled = [...chosen].sort(() => Math.random() - .5).slice(0, count);
   currentQuiz = { items: shuffled, index: 0, revealed: false, answered: false, hint: false, correct: 0 };
   renderQuizQuestion();
@@ -141,14 +159,14 @@ function renderQuizQuestion() {
   const quiz = currentQuiz; if (!quiz) return renderQuizSetup();
   if (quiz.index >= quiz.items.length) {
     const percent = Math.round(quiz.correct / quiz.items.length * 100);
-    $("#quiz-content").innerHTML = `<div class="quiz-card quiz-finish" style="text-align:center;padding:50px 25px"><div class="section-mascot mascot" data-mascot style="background-position:${characterPositions[state.character]}"></div><div class="stat-icon lilac" style="margin:0 auto 15px;font-size:24px">✦</div><div class="eyebrow">PRACTICE COMPLETE</div><h2>${quiz.correct === quiz.items.length ? "완벽해요! 오늘의 문장을 모두 맞혔어요 🎉" : "수고했어요! 한 문제씩 실력이 자라고 있어요."}</h2><p>${quiz.items.length}문제 중 <b>${quiz.correct}</b>개 정답 · ${percent}%</p><button class="primary-button" id="finish-quiz">홈으로 돌아가기 →</button><p class="quiz-footer">복습이 필요한 문장은 학습 메뉴에서 다시 확인할 수 있어요.</p></div>`;
+    $("#quiz-content").innerHTML = `<div class="quiz-card quiz-finish" style="text-align:center;padding:50px 25px"><div class="section-mascot mascot" data-mascot></div><div class="stat-icon lilac" style="margin:0 auto 15px;font-size:24px">✦</div><div class="eyebrow">PRACTICE COMPLETE</div><h2>${quiz.correct === quiz.items.length ? "완벽해요! 오늘의 문장을 모두 맞혔어요 🎉" : "수고했어요! 한 문제씩 실력이 자라고 있어요."}</h2><p>${quiz.items.length}문제 중 <b>${quiz.correct}</b>개 정답 · ${percent}%</p><button class="primary-button" id="finish-quiz">홈으로 돌아가기 →</button><p class="quiz-footer">복습이 필요한 문장은 학습 메뉴에서 다시 확인할 수 있어요.</p></div>`;
     $("#finish-quiz").addEventListener("click", () => { currentQuiz = null; showView("home"); }); return;
   }
   const item = quiz.items[quiz.index];
   const displayUnit = units.find(u => u.number === item.unit_no);
   const feedback = quiz.revealed ? `<div class="quiz-feedback ${quiz.answered ? "good" : "try"}">${quiz.answered ? ["멋져요! 정확한 문장이에요 ✨","아주 잘했어요! 다음 문장도 해봐요 🌷","완벽해요, 한 걸음 더 성장했어요 🎉"][quiz.index % 3] : ["괜찮아요, 다시 한 번 천천히 써봐요 💪","거의 다 왔어요! 정답을 확인하고 다시 도전해요 🌱","연습하다 보면 금방 익숙해질 거예요 😊"][quiz.index % 3]}${!quiz.answered ? `<span class="correct-answer">정답: ${escapeHtml(item.english)}</span>` : ""}</div>` : "";
   const words = item.english.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|[^\sA-Za-z]+/g) || [];
-  $("#quiz-content").innerHTML = `<div class="quiz-top"><button class="back-button" id="quiz-exit">← 나가기</button><div class="quiz-progress"><span style="width:${Math.round((quiz.index+1)/quiz.items.length*100)}%"></span></div><b>${quiz.index+1} / ${quiz.items.length}</b></div><div class="quiz-card"><div class="section-mascot mascot" data-mascot style="background-position:${characterPositions[state.character]}"></div><div class="quiz-unit-label">${escapeHtml(item.unit_no)} · ${escapeHtml(item.sentence_no)}번</div><h2>영어 문장을 만들어보세요</h2><p class="prompt-help">한국어 문장을 영어로 적어주세요.</p><div class="korean-prompt">${escapeHtml(item.korean)}</div><form id="answer-form"><input class="answer-input" id="answer-input" autocomplete="off" placeholder="영어 문장을 입력해보세요" ${quiz.answered ? "disabled" : ""} value="${escapeHtml(quiz.input || "")}"><div class="hint-area"><button type="button" class="hint-button" id="hint-button">${quiz.hint ? "힌트를 숨기기 ↑" : "✦ 단어 힌트 보기"}</button>${quiz.hint ? `<div class="hint-words">${[...words].sort(() => Math.random()-.5).map(word => `<span class="hint-word">${escapeHtml(word)}</span>`).join("")}</div>` : ""}</div>${feedback}<div class="quiz-controls">${quiz.revealed && !quiz.answered ? `<button type="button" class="secondary-button" id="retry-answer">다시 풀기</button>` : ""}<button class="primary-button" type="submit">${quiz.revealed && quiz.answered ? "다음 문제 →" : "정답 확인"}</button></div></form><p class="quiz-footer">대소문자, 공백, 문장부호 차이는 채점에서 무시해요.</p></div>`;
+  $("#quiz-content").innerHTML = `<div class="quiz-top"><div class="quiz-progress"><span style="width:${Math.round((quiz.index+1)/quiz.items.length*100)}%"></span></div><b>문제 ${quiz.index+1} / ${quiz.items.length}</b><button class="quiz-exit-button" id="quiz-exit">나가기</button></div><div class="quiz-card"><div class="section-mascot mascot" data-mascot></div><div class="quiz-unit-label">${escapeHtml(item.unit_no)} · ${escapeHtml(item.sentence_no)}번</div><h2>영어 문장을 만들어보세요</h2><p class="prompt-help">한국어 문장을 영어로 적어주세요.</p><div class="korean-prompt">${escapeHtml(item.korean)}</div><form id="answer-form"><input class="answer-input" id="answer-input" autocomplete="off" placeholder="영어 문장을 입력해보세요" ${quiz.answered ? "disabled" : ""} value="${escapeHtml(quiz.input || "")}"><div class="hint-area"><button type="button" class="hint-button" id="hint-button">${quiz.hint ? "힌트를 숨기기 ↑" : "✦ 단어 힌트 보기"}</button>${quiz.hint ? `<div class="hint-words">${[...words].sort(() => Math.random()-.5).map(word => `<span class="hint-word">${escapeHtml(word)}</span>`).join("")}</div>` : ""}</div>${feedback}<div class="quiz-controls">${quiz.revealed && !quiz.answered ? `<button type="button" class="secondary-button" id="retry-answer">다시 풀기</button>` : ""}<button class="primary-button" type="submit">${quiz.revealed && quiz.answered ? "다음 문제 →" : "정답 확인"}</button></div></form><p class="quiz-footer">대소문자, 공백, 문장부호 차이는 채점에서 무시해요.</p></div>`;
   $("#quiz-exit").addEventListener("click", () => { currentQuiz = null; renderQuizSetup(); });
   $("#hint-button").addEventListener("click", () => { quiz.hint = !quiz.hint; renderQuizQuestion(); });
   if (!quiz.answered) $("#answer-input").addEventListener("input", e => quiz.input = e.target.value);
@@ -195,7 +213,7 @@ function showModal(content) { $("#modal-content").innerHTML = content + '<div cl
 function closeModal() { $("#modal").hidden = true; }
 function toast(message) { let node = $(".toast"); if (!node) { node = document.createElement("div"); node.className = "toast"; document.body.append(node); } node.textContent = message; node.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => node.hidden = true, 2900); }
 function openCharacterPicker() {
-  const choices = characters.map((name,index) => `<button class="character-option ${state.character===index?"active":""}" data-character="${index}"><div class="character-face" style="background-position:${characterPositions[index]}"></div><span>${name}</span></button>`).join("");
+  const choices = characters.map((name,index) => `<button class="character-option ${state.character===index?"active":""}" data-character="${index}"><img class="character-face" src="./images/mood/${characterFiles[index]}" alt="${name}"><span>${name}</span></button>`).join("");
   showModal(`<div class="eyebrow">PICK YOUR MOOD</div><h2 id="modal-title">오늘의 기분 캐릭터</h2><p>마음에 드는 친구를 골라보세요. 앱 색상도 함께 바뀌어요.</p><div class="character-grid">${choices}</div>`);
   $$("[data-character]", $("#modal-content")).forEach(button => button.addEventListener("click", () => { state.character = Number(button.dataset.character); setAccent(); saveLocal(); closeModal(); }));
 }
@@ -254,12 +272,12 @@ document.addEventListener("click",event=>{
   const unitButton=event.target.closest("[data-unit]"); if(unitButton){const id=unitButton.dataset.unit; selectedUnitIds.has(id)?selectedUnitIds.delete(id):selectedUnitIds.add(id); saveLocal();renderUnits();return;}
   const action=event.target.closest("[data-action]")?.dataset.action;
   if(action==="select-all"){ selectedUnitIds = selectedUnitIds.size === units.length ? new Set() : new Set(units.map(unit=>unit.number)); saveLocal(); renderUnits(); return; }
-  if(action==="start-study"){showView("study");return;}
-  if(action==="start-quiz"){showView("quiz");return;}
+  if(action==="start-study"){if(!selectedUnitIds.size){promptUnitSelection();return;}showView("study");return;}
+  if(action==="start-quiz"){if(!selectedUnitIds.size){promptUnitSelection();return;}showView("quiz");return;}
+  if(action==="choose-units"){promptUnitSelection();return;}
   const speakButton=event.target.closest("[data-speak]"); if(speakButton){speak(speakButton.dataset.speak);return;}
 });
 $("#user-button").addEventListener("click",()=>openAuth());
-$("#user-add-button").addEventListener("click",()=>openAuth("register"));
 $("#points-button").addEventListener("click",openPoints);
 $("#character-action").addEventListener("click",openCharacterPicker);
 $("#menu-toggle").addEventListener("click",()=>setMenuOpen(!$(".sidebar").classList.contains("open")));

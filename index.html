@@ -25,13 +25,13 @@
     </aside>
 
     <main class="main-area">
-      <header class="topbar"><div><div class="eyebrow">KOREAN → ENGLISH</div><h1 id="page-title">오늘의 학습</h1></div><div class="top-actions"><button class="points-button" id="points-button"><span>✦</span> <b id="points-total">0</b> pt</button><button class="user-button" id="user-button"><span class="avatar-dot">K</span><span id="user-label">로그인</span></button><button class="user-add-button" id="user-add-button" type="button">사용자 추가하기</button><button class="menu-toggle" id="menu-toggle" aria-label="메뉴 열기">☰</button></div></header>
+      <header class="topbar"><div><div class="eyebrow">KOREAN → ENGLISH</div><h1 id="page-title">오늘의 학습</h1></div><div class="top-actions"><button class="points-button" id="points-button"><span>✦</span> <b id="points-total">0</b> pt</button><button class="user-button" id="user-button"><span class="avatar-dot">K</span><span id="user-label">로그인</span></button><button class="menu-toggle" id="menu-toggle" aria-label="메뉴 열기">☰</button></div></header>
 
       <section class="view active" id="view-home">
-        <div class="welcome-card home-hero"><div class="welcome-copy"><div class="eyebrow">YOUR ENGLISH JOURNEY</div><h2><span id="welcome-name">반가워요!</span><br>오늘은 어떤 Unit을 공부할까요?</h2><p>Unit을 골라 바로 문장 학습이나 퀴즈를 시작해요.</p></div><div class="hero-mascot mascot" data-mascot></div><div class="welcome-orb orb-one"></div><div class="welcome-orb orb-two"></div></div>
+        <div class="welcome-card home-hero"><div class="welcome-copy"><div class="eyebrow">YOUR ENGLISH JOURNEY</div><h2><span id="welcome-name">반가워요!</span><br>오늘은 어떤 Unit을 공부할까요?</h2><p>Unit을 골라 바로 문장 학습이나 퀴즈를 시작해요.</p><button type="button" class="character-select-button" id="character-action"><img id="selected-character-icon" src="./images/mood/excited.png" alt="excited"><span id="selected-character-name">excited</span><span>캐릭터 변경</span></button></div><div class="hero-mascot mascot" data-mascot></div><div class="welcome-orb orb-one"></div><div class="welcome-orb orb-two"></div></div>
         <div class="view-intro unit-picker-heading"><div><span class="eyebrow">CHOOSE YOUR LESSON</span><h2>학습할 Unit 선택</h2><p>여러 Unit을 함께 선택할 수 있어요.</p></div><div class="selection-tools"><button class="text-button" data-action="select-all">전체 선택</button><span class="selection-count" id="selection-count">0개 선택</span></div></div>
+        <div class="sticky-actions home-sticky"><span id="selected-label">Unit을 선택해주세요</span><div><button class="secondary-button" data-action="start-study">학습하기</button><button class="secondary-button" data-action="start-quiz">퀴즈 시작 →</button></div></div>
         <div id="unit-groups" class="unit-groups home-unit-groups"></div>
-        <div class="sticky-actions home-sticky"><span id="selected-label">Unit을 선택해주세요</span><div><button class="secondary-button" data-action="start-study">학습하기</button><button class="primary-button" data-action="start-quiz">퀴즈 시작 →</button></div></div>
       </section>
 
       <section class="view" id="view-stats">
