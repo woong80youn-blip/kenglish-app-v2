@@ -5,7 +5,7 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const safeParse = (value, fallback) => { try { return JSON.parse(value) ?? fallback; } catch { return fallback; } };
 const LOCAL_KEY = "kenglish-progress-v1";
 const USER_KEY = "kenglish-local-user";
-const DEFAULT_STATE = { progress: {}, selectedUnits: [], character: 0, points: 0, streak: 0, lastStudyDate: "", daily: {}, dailyByUnit: {}, awarded: { units: [], parts: [], streak5: 0, streak10: 0, streak5Run: 0, streak10Run: 0, complete: false } };
+const DEFAULT_STATE = { progress: {}, selectedUnits: [], character: 0, points: 0, pointDeductions: [], streak: 0, lastStudyDate: "", daily: {}, dailyByUnit: {}, awarded: { units: [], parts: [], videoUnits: [], streak5: 0, streak10: 0, streak5Run: 0, streak10Run: 0, complete: false } };
 const characters = ["excited","joyful","grateful","energized","sensitive","confused","bored","stressed","angry","insecure","hurt","guilty"];
 const characterFiles = ["excited.png","joyful.png","gratful.png","energized.png","sensitive.png","confused.png","bored.png","stressed.png","angry.png","insecure.png","hurt.png","guilty.png"];
 let sentences = [];
@@ -36,8 +36,10 @@ function loadLocal() {
   activeUser = safeParse(localStorage.getItem(USER_KEY), null);
   state = { ...structuredClone(DEFAULT_STATE), ...safeParse(localStorage.getItem(localKey()), {}) };
   state.progress ??= {}; state.awarded ??= structuredClone(DEFAULT_STATE.awarded);
+  state.pointDeductions ??= [];
   state.daily ??= {}; state.dailyByUnit ??= {}; state.character ??= 0;
   state.awarded = { ...structuredClone(DEFAULT_STATE.awarded), ...state.awarded };
+  state.awarded.videoUnits ??= [];
   selectedUnitIds = new Set(state.selectedUnits || []);
 }
 function saveLocal() { state.selectedUnits = [...selectedUnitIds]; localStorage.setItem(localKey(), JSON.stringify(state)); void cloudSave(); }
@@ -136,7 +138,7 @@ function renderStudy() {
   if (!chosen.length) {
     $("#study-content").innerHTML = `<div class="empty-state"><div class="empty-mascot mascot" data-mascot></div><h3>먼저 Unit을 골라주세요</h3><p>학습할 Unit을 선택하면 문장과 발음을 확인할 수 있어요.</p><button class="primary-button" data-action="choose-units">Unit 선택하기 →</button></div>`; return;
   }
-  $("#study-content").innerHTML = chosen.map(unit => `<section class="study-header"><div class="study-unit-heading"><div><div class="eyebrow">${escapeHtml(unit.part)} · ${escapeHtml(unit.number)}</div><h2>${escapeHtml(unit.title)}</h2><p>문장 ${realSentences(unit).length}개 · 진행률 ${unitPct(unit)}%</p></div><div class="section-mascot mascot" data-mascot></div>${/^https?:\/\//i.test(unit.url) ? `<a class="video-link" href="${escapeHtml(unit.url)}" target="_blank" rel="noopener">▶ 강의 영상 보기</a>` : ""}</div></section><div class="sentence-list">${unit.sentences.map(sentence => { const isPlaceholder = !realSentences(unit).includes(sentence); const progress=progressFor(sentence); const status=progress.status==="complete"?`학습 완료 · 정답 ${progress.correct}회`:progress.status==="learning"?"다시 연습해요":"새 문장"; return `<article class="sentence-card"><span class="sentence-no">${escapeHtml(sentence.sentence_no)}</span><div><div class="sentence-ko">${escapeHtml(sentence.korean)}</div><div class="sentence-en ${isPlaceholder ? "sentence-empty" : ""}">${escapeHtml(sentence.english)}</div>${!isPlaceholder?`<div class="sentence-status ${progress.status}">${status}</div>`:""}</div>${!isPlaceholder ? `<button class="speak-button" data-speak="${escapeHtml(sentence.english)}" aria-label="영어 발음 듣기">◖</button>` : ""}</article>`; }).join("")}</div>`).join("");
+  $("#study-content").innerHTML = chosen.map(unit => `<section class="study-header"><div class="study-unit-heading"><div><div class="eyebrow">${escapeHtml(unit.part)} · ${escapeHtml(unit.number)}</div><h2>${escapeHtml(unit.title)}</h2><p>문장 ${realSentences(unit).length}개 · 진행률 ${unitPct(unit)}%</p></div><div class="section-mascot mascot" data-mascot></div>${/^https?:\/\//i.test(unit.url) ? `<a class="video-link" data-video-unit="${escapeHtml(unit.number)}" href="${escapeHtml(unit.url)}" target="_blank" rel="noopener">▶ 강의 영상 보기</a>` : ""}</div></section><div class="sentence-list">${unit.sentences.map(sentence => { const isPlaceholder = !realSentences(unit).includes(sentence); const progress=progressFor(sentence); const status=progress.status==="complete"?`학습 완료 · 정답 ${progress.correct}회`:progress.status==="learning"?"다시 연습해요":"새 문장"; return `<article class="sentence-card"><span class="sentence-no">${escapeHtml(sentence.sentence_no)}</span><div><div class="sentence-ko">${escapeHtml(sentence.korean)}</div><div class="sentence-en ${isPlaceholder ? "sentence-empty" : ""}">${escapeHtml(sentence.english)}</div>${!isPlaceholder?`<div class="sentence-status ${progress.status}">${status}</div>`:""}</div>${!isPlaceholder ? `<button class="speak-button" data-speak="${escapeHtml(sentence.english)}" aria-label="영어 발음 듣기">◖</button>` : ""}</article>`; }).join("")}</div>`).join("");
 }
 function renderQuizSetup() {
   currentQuiz = null;
@@ -166,7 +168,7 @@ function renderQuizQuestion() {
   const displayUnit = units.find(u => u.number === item.unit_no);
   const feedback = quiz.revealed ? `<div class="quiz-feedback ${quiz.answered ? "good" : "try"}">${quiz.answered ? ["멋져요! 정확한 문장이에요 ✨","아주 잘했어요! 다음 문장도 해봐요 🌷","완벽해요, 한 걸음 더 성장했어요 🎉"][quiz.index % 3] : ["괜찮아요, 다시 한 번 천천히 써봐요 💪","거의 다 왔어요! 정답을 확인하고 다시 도전해요 🌱","연습하다 보면 금방 익숙해질 거예요 😊"][quiz.index % 3]}${!quiz.answered ? `<span class="correct-answer">정답: ${escapeHtml(item.english)}</span>` : ""}</div>` : "";
   const words = item.english.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|[^\sA-Za-z]+/g) || [];
-  $("#quiz-content").innerHTML = `<div class="quiz-top"><div class="quiz-progress"><span style="width:${Math.round((quiz.index+1)/quiz.items.length*100)}%"></span></div><b>문제 ${quiz.index+1} / ${quiz.items.length}</b><button class="quiz-exit-button" id="quiz-exit">나가기</button></div><div class="quiz-card"><div class="section-mascot mascot" data-mascot></div><div class="quiz-unit-label">${escapeHtml(item.unit_no)} · ${escapeHtml(item.sentence_no)}번</div><h2>영어 문장을 만들어보세요</h2><p class="prompt-help">한국어 문장을 영어로 적어주세요.</p><div class="korean-prompt">${escapeHtml(item.korean)}</div><form id="answer-form"><input class="answer-input" id="answer-input" autocomplete="off" placeholder="영어 문장을 입력해보세요" ${quiz.answered ? "disabled" : ""} value="${escapeHtml(quiz.input || "")}"><div class="hint-area"><button type="button" class="hint-button" id="hint-button">${quiz.hint ? "힌트를 숨기기 ↑" : "✦ 단어 힌트 보기"}</button>${quiz.hint ? `<div class="hint-words">${[...words].sort(() => Math.random()-.5).map(word => `<span class="hint-word">${escapeHtml(word)}</span>`).join("")}</div>` : ""}</div>${feedback}<div class="quiz-controls">${quiz.revealed && !quiz.answered ? `<button type="button" class="secondary-button" id="retry-answer">다시 풀기</button>` : ""}<button class="primary-button" type="submit">${quiz.revealed && quiz.answered ? "다음 문제 →" : "정답 확인"}</button></div></form><p class="quiz-footer">대소문자, 공백, 문장부호 차이는 채점에서 무시해요.</p></div>`;
+  $("#quiz-content").innerHTML = `<div class="quiz-top"><div class="quiz-progress"><span style="width:${Math.round((quiz.index+1)/quiz.items.length*100)}%"></span></div><b>문제 ${quiz.index+1} / ${quiz.items.length}</b><button class="quiz-exit-button" id="quiz-exit">나가기</button></div><div class="quiz-card"><div class="section-mascot mascot" data-mascot></div><div class="quiz-unit-label">${escapeHtml(item.unit_no)} · ${escapeHtml(item.sentence_no)}번</div><h2>영어 문장을 만들어보세요</h2><p class="prompt-help">한국어 문장을 영어로 적어주세요.</p><div class="korean-prompt">${escapeHtml(item.korean)}</div><form id="answer-form" tabindex="-1"><input class="answer-input" id="answer-input" autocomplete="off" placeholder="영어 문장을 입력해보세요" ${quiz.answered ? "disabled" : ""} value="${escapeHtml(quiz.input || "")}"><div class="hint-area"><button type="button" class="hint-button" id="hint-button">${quiz.hint ? "힌트를 숨기기 ↑" : "✦ 단어 힌트 보기"}</button>${quiz.hint ? `<div class="hint-words">${[...words].sort(() => Math.random()-.5).map(word => `<span class="hint-word">${escapeHtml(word)}</span>`).join("")}</div>` : ""}</div>${feedback}<div class="quiz-controls">${quiz.revealed && !quiz.answered ? `<button type="button" class="secondary-button" id="retry-answer">다시 풀기</button>` : ""}${!quiz.revealed || quiz.answered ? `<button class="primary-button" type="submit">${quiz.revealed && quiz.answered ? "다음 문제 →" : "정답 확인"}</button>` : ""}</div></form><p class="quiz-footer">대소문자, 공백, 문장부호 차이는 채점에서 무시해요.</p></div>`;
   $("#quiz-exit").addEventListener("click", () => { currentQuiz = null; renderQuizSetup(); });
   $("#hint-button").addEventListener("click", () => { quiz.hint = !quiz.hint; renderQuizQuestion(); });
   if (!quiz.answered) $("#answer-input").addEventListener("input", e => quiz.input = e.target.value);
@@ -181,7 +183,15 @@ function renderQuizQuestion() {
     else { const existing = progressFor(item); state.progress[item.no] = { ...existing, status: "learning" }; saveLocal(); }
     renderQuizQuestion();
   });
-  $("#retry-answer")?.addEventListener("click", () => { quiz.revealed=false; quiz.hint=false; renderQuizQuestion(); $("#answer-input")?.focus(); });
+  $("#retry-answer")?.addEventListener("click", () => { quiz.input=""; quiz.revealed=false; quiz.hint=false; renderQuizQuestion(); $("#answer-input")?.focus(); });
+  $("#answer-form").addEventListener("keydown", event => {
+    if (event.key !== "Enter" || !quiz.revealed) return;
+    event.preventDefault();
+    if (!quiz.answered) { $("#retry-answer")?.click(); return; }
+    quiz.index++; quiz.revealed=false; quiz.answered=false; quiz.hint=false; quiz.input="";
+    renderQuizQuestion();
+  });
+  if (quiz.revealed) $("#answer-form")?.focus();
   if (!quiz.revealed) $("#answer-input")?.focus({preventScroll:true});
 }
 
@@ -209,7 +219,25 @@ function awardCompletions() {
 }
 function speak(text) { if (!window.speechSynthesis) return toast("이 브라우저에서는 음성 읽기를 지원하지 않아요."); speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = "en-US"; utterance.rate = .85; speechSynthesis.speak(utterance); }
 
-function showModal(content) { $("#modal-content").innerHTML = content + '<div class="modal-mascot mascot" data-mascot></div>'; setAccent(); $("#modal").hidden = false; }
+function showModal(content) {
+  $("#modal-content").innerHTML = content + '<div class="modal-mascot mascot" data-mascot></div>';
+  setAccent(); $("#modal").hidden = false;
+  if (content.includes("YOUR POINTS")) {
+    const deductions = state.pointDeductions || [];
+    const spent = deductions.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    $("#modal-content").insertAdjacentHTML("beforeend", `<section class="point-spend"><h3>포인트 사용</h3><p>누적 차감: ${spent.toLocaleString()} pt</p><form id="point-spend-form" class="modal-form"><label>사용할 포인트<input name="amount" type="number" max="${getPoints()}" step="1" required placeholder="양수: 차감, 음수: 복구"></label><label>사용 내역<input name="note" maxlength="80" placeholder="예: 작은 보상"></label><button class="primary-button" type="submit">포인트 반영</button></form><h3>차감 내역</h3>${deductions.length ? `<ul>${[...deductions].reverse().map(item => { const amount=Number(item.amount); return `<li>${escapeHtml(item.note || "포인트 사용")} · ${escapeHtml(item.date)} <b>${amount > 0 ? "-" : "+"}${Math.abs(amount).toLocaleString()} pt</b></li>`; }).join("")}</ul>` : `<p class="modal-note">아직 포인트 사용 내역이 없어요.</p>`}</section>`);
+    $("#point-spend-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const amount = Number(data.get("amount"));
+      if (!Number.isSafeInteger(amount) || amount === 0 || (amount > 0 && amount > getPoints()) || !Number.isSafeInteger(getPoints() - amount)) { toast("양수는 보유 포인트 이내로, 음수는 복구할 포인트로 입력해주세요."); return; }
+      state.points = getPoints() - amount;
+      state.pointDeductions ??= [];
+      state.pointDeductions.push({ amount, note: String(data.get("note") || "").trim(), date: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }) });
+      saveLocal(); renderHome(); openPoints();
+    });
+  }
+}
 function closeModal() { $("#modal").hidden = true; }
 function toast(message) { let node = $(".toast"); if (!node) { node = document.createElement("div"); node.className = "toast"; document.body.append(node); } node.textContent = message; node.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => node.hidden = true, 2900); }
 function openCharacterPicker() {
@@ -223,7 +251,8 @@ function openPoints() {
   const answerPoints = Object.values(state.progress).reduce((sum,p) => sum + (p.correct||0),0)*10;
   const unitPoints = completeUnits*500, partPoints=completeParts*1000;
   const streakPoints = (state.awarded.streak5||0)*1000 + (state.awarded.streak10||0)*3000;
-  showModal(`<div class="eyebrow">YOUR POINTS</div><h2 id="modal-title">나의 포인트</h2><p>꾸준한 학습으로 모은 포인트예요.</p><table class="point-table"><tr><td>문장 정답 (${Object.values(state.progress).reduce((sum,p)=>sum+(p.correct||0),0)}회 × 10)</td><td>${answerPoints.toLocaleString()} pt</td></tr><tr><td>완료 Unit (${completeUnits}개 × 500)</td><td>${unitPoints.toLocaleString()} pt</td></tr><tr><td>완료 Part (${completeParts}개 × 1,000)</td><td>${partPoints.toLocaleString()} pt</td></tr><tr><td>연속 학습 보너스</td><td>${streakPoints.toLocaleString()} pt</td></tr><tr><td><b>현재 보유 포인트</b></td><td><b>${getPoints().toLocaleString()} pt</b></td></tr></table><p class="modal-note">연속 학습 보너스는 5일 달성 시 1,000pt, 10일 달성 시 3,000pt가 지급돼요.</p>`);
+  const videoPoints = (state.awarded.videoUnits||[]).length*50;
+  showModal(`<div class="eyebrow">YOUR POINTS</div><h2 id="modal-title">나의 포인트</h2><p>꾸준한 학습으로 모은 포인트예요.</p><table class="point-table"><tr><td>문장 정답 (${Object.values(state.progress).reduce((sum,p)=>sum+(p.correct||0),0)}회 × 10)</td><td>${answerPoints.toLocaleString()} pt</td></tr><tr><td>완료 Unit (${completeUnits}개 × 500)</td><td>${unitPoints.toLocaleString()} pt</td></tr><tr><td>완료 Part (${completeParts}개 × 1,000)</td><td>${partPoints.toLocaleString()} pt</td></tr><tr><td>강의 영상 보기 (${(state.awarded.videoUnits||[]).length}개 Unit × 50)</td><td>${videoPoints.toLocaleString()} pt</td></tr><tr><td>연속 학습 보너스</td><td>${streakPoints.toLocaleString()} pt</td></tr><tr><td><b>현재 보유 포인트</b></td><td><b>${getPoints().toLocaleString()} pt</b></td></tr></table><p class="modal-note">연속 학습 보너스는 5일 달성 시 1,000pt, 10일 달성 시 3,000pt가 지급돼요.</p>`);
 }
 
 async function openAuth(mode="login") {
@@ -270,6 +299,7 @@ async function initFirebase() {
 
 
 document.addEventListener("click",event=>{
+  const videoLink=event.target.closest("[data-video-unit]"); if(videoLink){const unitNo=videoLink.dataset.videoUnit; if(!state.awarded.videoUnits.includes(unitNo)){state.awarded.videoUnits.push(unitNo);state.points=getPoints()+50;saveLocal();renderHome();toast("강의 영상 확인 보상 +50 point 🎬");}return;}
   const nav=event.target.closest("[data-view]"); if(nav){showView(nav.dataset.view);return;}
   const unitButton=event.target.closest("[data-unit]"); if(unitButton){const id=unitButton.dataset.unit; selectedUnitIds.has(id)?selectedUnitIds.delete(id):selectedUnitIds.add(id); saveLocal();renderUnits();return;}
   const action=event.target.closest("[data-action]")?.dataset.action;
