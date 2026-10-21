@@ -200,3 +200,8 @@ body{background:var(--canvas);color:var(--ink)}
 .quiz-controls .secondary-button{flex:1;margin-right:0}
 
 .point-spend{margin-top:18px}.point-spend h3{font-size:14px;margin:16px 0 8px}.point-spend ul{list-style:none;padding:0;margin:8px 0}.point-spend li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px}.point-spend li b{white-space:nowrap;color:var(--accent)}
+
+.study-quiz-action{display:flex;justify-content:center;margin:28px 0 12px}.study-quiz-action .primary-button{min-width:min(100%,320px);padding:14px 24px;font-size:15px}
+@media(max-width:720px){.study-quiz-action{margin:22px 0 8px}.study-quiz-action .primary-button{width:100%}}
+.sentence-list + .study-header{margin-top:32px}
+@media(max-width:720px){.sentence-list + .study-header{margin-top:24px}}

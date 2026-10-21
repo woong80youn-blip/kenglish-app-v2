@@ -133,19 +133,25 @@ function promptUnitSelection() {
   requestAnimationFrame(() => $("#unit-groups")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   toast("먼저 학습할 Unit을 선택해주세요.");
 }
-function renderStudy() {
+function renderStudyContent() {
   const chosen = units.filter(unit => selectedUnitIds.has(unit.number));
   if (!chosen.length) {
     $("#study-content").innerHTML = `<div class="empty-state"><div class="empty-mascot mascot" data-mascot></div><h3>먼저 Unit을 골라주세요</h3><p>학습할 Unit을 선택하면 문장과 발음을 확인할 수 있어요.</p><button class="primary-button" data-action="choose-units">Unit 선택하기 →</button></div>`; return;
   }
   $("#study-content").innerHTML = chosen.map(unit => `<section class="study-header"><div class="study-unit-heading"><div><div class="eyebrow">${escapeHtml(unit.part)} · ${escapeHtml(unit.number)}</div><h2>${escapeHtml(unit.title)}</h2><p>문장 ${realSentences(unit).length}개 · 진행률 ${unitPct(unit)}%</p></div><div class="section-mascot mascot" data-mascot></div>${/^https?:\/\//i.test(unit.url) ? `<a class="video-link" data-video-unit="${escapeHtml(unit.number)}" href="${escapeHtml(unit.url)}" target="_blank" rel="noopener">▶ 강의 영상 보기</a>` : ""}</div></section><div class="sentence-list">${unit.sentences.map(sentence => { const isPlaceholder = !realSentences(unit).includes(sentence); const progress=progressFor(sentence); const status=progress.status==="complete"?`학습 완료 · 정답 ${progress.correct}회`:progress.status==="learning"?"다시 연습해요":"새 문장"; return `<article class="sentence-card"><span class="sentence-no">${escapeHtml(sentence.sentence_no)}</span><div><div class="sentence-ko">${escapeHtml(sentence.korean)}</div><div class="sentence-en ${isPlaceholder ? "sentence-empty" : ""}">${escapeHtml(sentence.english)}</div>${!isPlaceholder?`<div class="sentence-status ${progress.status}">${status}</div>`:""}</div>${!isPlaceholder ? `<button class="speak-button" data-speak="${escapeHtml(sentence.english)}" aria-label="영어 발음 듣기">◖</button>` : ""}</article>`; }).join("")}</div>`).join("");
 }
+function renderStudy() {
+  renderStudyContent();
+  if (units.some(unit => selectedUnitIds.has(unit.number))) {
+    $("#study-content").insertAdjacentHTML("beforeend", `<div class="study-quiz-action"><button type="button" class="primary-button" data-action="start-quiz">퀴즈 시작 →</button></div>`);
+  }
+}
 function renderQuizSetup() {
   currentQuiz = null;
   const chosen = units.filter(unit => selectedUnitIds.has(unit.number));
   if (!chosen.length) { $("#quiz-content").innerHTML = `<div class="empty-state"><div class="empty-mascot mascot" data-mascot></div><h3>퀴즈할 Unit을 골라주세요</h3><p>하나 이상의 Unit을 선택한 후 퀴즈를 시작할 수 있어요.</p><button class="primary-button" data-action="choose-units">Unit 선택하기 →</button></div>`; return; }
   const count = chosen.reduce((sum, u) => sum + realSentences(u).length, 0);
-  $("#quiz-content").innerHTML = `<div class="quiz-card"><div class="section-mascot mascot" data-mascot></div><div class="eyebrow">READY TO PRACTICE?</div><h2>문장 만들기 퀴즈</h2><p class="prompt-help">${chosen.map(u => escapeHtml(u.number)).join(" · ")}에서 문제가 무작위로 나와요.</p><div class="korean-prompt">몇 문제를 풀어볼까요?</div><label for="quiz-count">문제 수 <b id="quiz-count-label">${Math.min(10,count)}</b> / ${count}</label><input id="quiz-count" type="range" min="1" max="${count}" value="${Math.min(10,count)}" style="width:100%;accent-color:var(--accent);margin:12px 0 24px"><button class="primary-button" id="begin-quiz" style="width:100%">퀴즈 시작하기 →</button><p class="quiz-footer">힌트를 누르면 정답 문장의 단어를 섞어 보여줘요.</p></div>`;
+  $("#quiz-content").innerHTML = `<div class="quiz-card"><div class="section-mascot mascot" data-mascot></div><div class="eyebrow">READY TO PRACTICE?</div><h2>문장 만들기 퀴즈</h2><p class="prompt-help">${chosen.map(u => escapeHtml(u.number)).join(" · ")}에서 문제가 무작위로 나와요.</p><div class="korean-prompt">몇 문제를 풀어볼까요?</div><label for="quiz-count">문제 수 <b id="quiz-count-label">${count}</b> / ${count}</label><input id="quiz-count" type="range" min="1" max="${count}" value="${count}" style="width:100%;accent-color:var(--accent);margin:12px 0 24px"><button class="primary-button" id="begin-quiz" style="width:100%">퀴즈 시작하기 →</button><p class="quiz-footer">힌트를 누르면 정답 문장의 단어를 섞어 보여줘요.</p></div>`;
   $("#quiz-count").addEventListener("input", event => $("#quiz-count-label").textContent = event.target.value);
   $("#begin-quiz").addEventListener("click", () => startQuiz(Number($("#quiz-count").value)));
 }
