@@ -27,3 +27,15 @@ ES modules와 JSON fetch를 사용하므로 파일을 직접 여는 대신 로�
 - `data/kenglish.json`은 최신 `kenglish.csv`의 779개 행을 열 이름만 지정된 구조로 변환한 파일입니다.
 - 데이터에 있는 Part 01~05의 Unit 75개를 사용합니다. CSV의 원본 문장은 수정하거나 추가하지 않았습니다.
 - 퀴즈 정답 판정은 대소문자, 공백, 일반적인 문장 부호 및 apostrophe 표기 차이를 무시합니다. 단어 자체는 바꾸지 않습니다.
+
+## Git
+
+woong@DESKTOP-STBC6CJ MINGW64 /d/workspace/kenglish-app-v2 (main)
+
+$ git add ./
+
+$ git commit -m "202610211312 commit"
+
+$ git remote add origin https://github.com/woong80youn-blip/kenglish-app-v2.git
+
+$ git push -u origin main
